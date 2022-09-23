@@ -28,6 +28,9 @@ def check_profit(list):
             pass
     return returned_list
 
+def show_data(list):
+    for i in list:
+        print(f'Товар {i[0]["item_id"]} з відсотком окупа {i[2]}')
 
 start = time.time()
 line_request = ''
@@ -47,7 +50,7 @@ for item in range(len(items)):
     if len(chunk_items) != 100:
         chunk_items.append(items[item]) #створення чанку по 20 предметів
     else:
-        req = requests.get(f'https://www.albion-online-data.com/api/v1/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,Lymhurst').json()
+        req = requests.get(f'https://www.albion-online-data.com/api/v1/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,FortSterling').json()
         items_information += req
         chunk_items = []
 formated_items = []
@@ -56,6 +59,7 @@ for i in range(len(items_information)):
         formated_items.append(items_information[i])
 #print(formated_items)
 sorted_item = sort(formated_items)
-print(check_profit(sorted_item))
+checked_profit = check_profit(sorted_item)
+show_data(checked_profit)
 #print(f'https://www.albion-online-data.com/api/v2/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,Lymhurst')
 
