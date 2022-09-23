@@ -20,7 +20,7 @@ def check_profit(list):
     returned_list = []
     for i in range(len(list)):
         try:
-            profit_percentage = list[i][1]['buy_price_max'] / list[i][0]['sell_price_min']
+            profit_percentage = (list[i][0]['sell_price_min'] - list[i][1]['sell_price_min']) / list[i][1]['sell_price_min']
             if profit_percentage > 0.5:
                 list[i].append(round(profit_percentage, 2) * 100)
                 returned_list.append(list[i])
@@ -50,7 +50,7 @@ for item in range(len(items)):
     if len(chunk_items) != 100:
         chunk_items.append(items[item]) #створення чанку по 20 предметів
     else:
-        req = requests.get(f'https://www.albion-online-data.com/api/v1/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,FortSterling').json()
+        req = requests.get(f'https://www.albion-online-data.com/api/v1/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,FortSterlingPortal').json()
         items_information += req
         chunk_items = []
 formated_items = []
@@ -59,6 +59,7 @@ for i in range(len(items_information)):
         formated_items.append(items_information[i])
 #print(formated_items)
 sorted_item = sort(formated_items)
+print(sorted_item)
 checked_profit = check_profit(sorted_item)
 show_data(checked_profit)
 #print(f'https://www.albion-online-data.com/api/v2/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,Lymhurst')
