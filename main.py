@@ -58,3 +58,4 @@ for i in range(len(items_information)):
 sorted_item = sort(formated_items)
 print(check_profit(sorted_item))
 #print(f'https://www.albion-online-data.com/api/v2/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,Lymhurst')
+
