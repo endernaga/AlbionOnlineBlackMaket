@@ -2,6 +2,19 @@
 import time
 import re
 import requests
+import os
+import sys
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 def sort(list):
@@ -30,15 +43,15 @@ def check_profit(list):
 
 def show_data(list):
     for i in list:
-        print(f'Товар {i[0]["item_id"]} з відсотком окупа {i[2]}')
+        print(f'Товар {i[0]["item_id"]} з відсотком окупа {i[2]} з ціною покупки {i[1]["sell_price_min"]} і продажі {i[0]["sell_price_min"]}')
 
 start = time.time()
 line_request = ''
 template = re.compile(r"\w\d_(\w)*_(\w)*_(\w)*")
 corect_items = ''
-with open('items_Id.txt') as f:
+with open(resource_path('items_Id.txt')) as f:
     for line in f:
-        corect_item =  re.search(r"\w[45678]_(\w)*_PLATE_(\w)*", line) #створив шаблон для пошуку id
+        corect_item =  re.search(r"\w[45678]_(\w)*_CLOTH_(\w)*", line) #створив шаблон для пошуку id
         if corect_item:
             corect_items += corect_item.group() + '\n'
 #print(corect_items)
@@ -48,11 +61,15 @@ chunk_items = []
 items_information = []
 for item in range(len(items)):
     if len(chunk_items) != 100:
-        chunk_items.append(items[item]) #створення чанку по 20 предметів
+        chunk_items.append(items[item]) #створення чанку по 100 предметів
     else:
         req = requests.get(f'https://www.albion-online-data.com/api/v1/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,FortSterlingPortal').json()
         items_information += req
         chunk_items = []
+else:
+    req = requests.get(
+        f'https://www.albion-online-data.com/api/v1/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,FortSterlingPortal').json()
+    items_information += req
 formated_items = []
 for i in range(len(items_information)):
     if items_information[i]['sell_price_max'] or items_information[i]['buy_price_min']:
@@ -62,5 +79,6 @@ sorted_item = sort(formated_items)
 print(sorted_item)
 checked_profit = check_profit(sorted_item)
 show_data(checked_profit)
+input()
 #print(f'https://www.albion-online-data.com/api/v2/stats/prices/{",".join(chunk_items)}?locations=BlackMarket,Lymhurst')
 
